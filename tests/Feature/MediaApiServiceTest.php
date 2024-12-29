@@ -1,28 +1,31 @@
 <?php
 
-namespace Feature;
+namespace Tests\Feature;
 
 use App\Services\MediaApiService;
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class MediaApiServiceTest extends TestCase
 {
     public function testSearchMedia(): void
     {
-        $response = '<div>Test Test <p>Test</p></div>';
+        $response = [
+            '0' => [
+                'title' => 1,
+                'poster' => 'http://example.com/image.jpg',
+                'url' => 'http://example.com/test',
+            ]
+        ];
 
         $mock = Mockery::mock(MediaApiService::class)->makePartial();
 
-        // Define expected method calls and their return values
         $mock->shouldReceive('searchMedia')->once()->andReturn($response);
 
-        // Use the mock in your test
         $result = $mock->searchMedia('Test');
-        $this->assertEquals('<div>Test Test <p>Test</p></div>', $result);
+        $this->assertEquals($response, $result);
 
-        // Ensure the mock expectations are verified
         Mockery::close();
     }
 }

@@ -34,11 +34,11 @@ class MediaApiService
         }
     }
 
-    public function searchMedia(string $title): string
+    public function searchMedia(string $title): array
     {
         $client = new Client();
 
-        $url = 'http://192.168.8.100:5002/find_media';
+        $url =  env('MEDIA_API_URL') . '/find_media';
 
         $response = $client->post($url, [
             'form_params' => [
@@ -48,14 +48,6 @@ class MediaApiService
 
         $result = $response->getBody()->getContents();
 
-        return $this->sanitizeHtml($result);
+        return json_decode($result, true);
     }
-
-    private function sanitizeHtml($html): string
-    {
-        $config = HTMLPurifier_Config::createDefault();
-        $purifier = new HTMLPurifier($config);
-        return $purifier->purify($html);
-    }
-
 }

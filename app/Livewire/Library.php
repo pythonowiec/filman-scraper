@@ -9,8 +9,8 @@ use Livewire\Component;
 
 class Library extends Component
 {
-    public string $title = ''; // Binds to the search input
-    public string $searchResult = ''; // Stores search results or messages
+    public string $title = '';
+    public array $searchResult = [];
     public bool $loading = false;
 
     public function search(MediaApiService $apiService): void
