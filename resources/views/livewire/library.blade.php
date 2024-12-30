@@ -36,10 +36,10 @@
 
     <div class="w-100">
         @if(!empty($searchResult) && is_array($searchResult))
-            <div class="grid grid-cols-4 gap-4 mt-5">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-5">
 
                 @foreach($searchResult as $key => $item)
-                    <div>
+                    <div class="border-solid border-2 p-2 border-black">
                         <img src="{{$item['poster']}}" alt="Plakat">
                         <p>{{$item['title']}}</p>
                     </div>
