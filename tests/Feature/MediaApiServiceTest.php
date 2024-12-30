@@ -3,29 +3,97 @@
 namespace Tests\Feature;
 
 use App\Services\MediaApiService;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use Mockery;
-use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class MediaApiServiceTest extends TestCase
 {
-    public function testSearchMedia(): void
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        // Create a mock Guzzle Client
+        $this->mockClient = Mockery::mock(Client::class);
+
+        // Bind the mock client to the service container
+        $this->app->instance(Client::class, $this->mockClient);
+
+        // Instantiate the ApiService with the mocked client
+        $this->apiService = new MediaApiService($this->mockClient);
+    }
+
+    public function testSearchMediaSuccess(): void
     {
         $response = [
             '0' => [
                 'title' => 1,
                 'poster' => 'http://example.com/image.jpg',
-                'url' => 'http://example.com/test',
+                'url' => 'https://example.com/test',
             ]
         ];
 
-        $mock = Mockery::mock(MediaApiService::class)->makePartial();
+        $mockResponse = new Response(200, [], json_encode($response));
 
-        $mock->shouldReceive('searchMedia')->once()->andReturn($response);
+        $url = env('MEDIA_API_URL') . '/find_media';
+        $title = 'Test';
 
-        $result = $mock->searchMedia('Test');
+        $this->mockClient
+            ->shouldReceive('post')
+            ->once()
+            ->with($url, [
+                'form_params' => [
+                    'title' => $title
+                ]
+            ])
+            ->andReturn($mockResponse);
+
+        $result = $this->apiService->searchMedia($title);
+
         $this->assertEquals($response, $result);
+    }
 
+    #[DataProvider('statusesDataProvider')]
+    public function testSearchMediaFailure(int $code, string $message): void
+    {
+        $url = env('MEDIA_API_URL') . '/find_media';
+
+        $mockResponse = new Response($code);
+        $request = new Request('POST', $url);
+        $exception = new RequestException($message, $request, $mockResponse);
+
+        $title = 'Test';
+
+        $this->mockClient
+            ->shouldReceive('post')
+            ->once()
+            ->with($url, [
+                'form_params' => [
+                    'title' => $title
+                ]
+            ])
+            ->andThrow($exception);
+
+        $result = $this->apiService->searchMedia($title);
+
+        $this->assertEquals($message, $result);
+    }
+
+    public static function statusesDataProvider(): array
+    {
+        return [
+            'when 404 not found' => ['code' => 404, 'message' => 'Not found any videos.'],
+            'when 500 error occurred' => ['code' => 500, 'message' => 'Something went wrong.'],
+        ];
+    }
+
+    protected function tearDown(): void
+    {
         Mockery::close();
+        parent::tearDown();
     }
 }
