@@ -1,13 +1,22 @@
 <?php
 
 namespace App\Services;
+
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use HTMLPurifier;
 use HTMLPurifier_Config;
 use Illuminate\Support\Facades\Storage;
 
 class MediaApiService
 {
+
+    protected Client $client;
+
+    public function __construct(Client $client)
+    {
+        $this->client = $client;
+    }
 
     public function downloadMedia(): \Illuminate\Http\JsonResponse
     {
@@ -18,14 +27,12 @@ class MediaApiService
             $response = $client->post($url, [
                 'form_params' => [
                     'url' => 'https://filman.cc/serial-online/m-jak-milosc/222657/odcinek-1836/1375975', // Replace with your URL
-                    'type' => 'PL', // Replace with your type
+                    'type' => 'PL',
                 ]
             ]);
 
-            // Get the file content from the response
             $fileContent = $response->getBody()->getContents();
 
-            // Optionally save the file locally
             Storage::disk('public')->put('downloaded_media/mediafile.mp4', $fileContent);
 
             return response()->json(['message' => 'File downloaded successfully']);
@@ -34,19 +41,29 @@ class MediaApiService
         }
     }
 
-    public function searchMedia(string $title): array
+    public function searchMedia(string $title): array|string
     {
-        $client = new Client();
+        $url = env('MEDIA_API_URL') . '/find_media';
 
-        $url =  env('MEDIA_API_URL') . '/find_media';
+        $result = '';
 
-        $response = $client->post($url, [
-            'form_params' => [
-                'title' => $title
-            ]
-        ]);
+        try {
+            $response = $this->client->post($url, [
+                'form_params' => [
+                    'title' => $title
+                ]
+            ]);
 
-        $result = $response->getBody()->getContents();
+            $result = $response->getBody()->getContents();
+        } catch (GuzzleException $exception) {
+            if ($exception->getCode() == 404) {
+                return 'Not found any videos.';
+            }
+
+            if ($exception->getCode() == 500) {
+                return 'Something went wrong.';
+            }
+        }
 
         return json_decode($result, true);
     }

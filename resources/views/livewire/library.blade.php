@@ -1,6 +1,6 @@
 <div>
     Here you can search specific movie or series
-    <form class="max-w-md mx-auto" wire:submit.prevent="search">
+    <form class="mt-5" wire:submit.prevent="search">
         <label for="default-search"
                class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
         <div class="relative">
@@ -35,17 +35,18 @@
     </div>
 
     <div class="w-100">
-        <div class="grid grid-cols-4 gap-4 mt-5">
+        @if(!empty($searchResult) && is_array($searchResult))
+            <div class="grid grid-cols-4 gap-4 mt-5">
 
-            @if(!empty($searchResult))
                 @foreach($searchResult as $key => $item)
                     <div>
                         <img src="{{$item['poster']}}" alt="Plakat">
                         <p>{{$item['title']}}</p>
                     </div>
                 @endforeach
-            @endif
-        </div>
+            </div>
+        @else
+            <div>{{is_string($searchResult) ? $searchResult : ''}}</div>
+        @endif
     </div>
-
 </div>

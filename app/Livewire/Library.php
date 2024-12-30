@@ -10,7 +10,7 @@ use Livewire\Component;
 class Library extends Component
 {
     public string $title = '';
-    public array $searchResult = [];
+    public string|array $searchResult;
     public bool $loading = false;
 
     public function search(MediaApiService $apiService): void
