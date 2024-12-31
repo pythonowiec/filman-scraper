@@ -68,4 +68,32 @@ class MediaApiService
 
         return json_decode($result, true);
     }
+
+    public function getSeriesEpisodes(string $seriesUrl): array|string
+    {
+        $url = env('MEDIA_API_URL') . '/find_series';
+
+        $result = '';
+
+        try {
+            $response = $this->client->post($url, [
+                'form_params' => [
+                    'url' => $seriesUrl
+                ]
+            ]);
+
+            $result = $response->getBody()->getContents();
+        } catch (GuzzleException $exception) {
+            switch ($exception->getCode()) {
+                case 404:
+                    return 'Not found any videos.';
+                case 401:
+                    return 'Not authorized.';
+                default:
+                    return 'Something went wrong.';
+            }
+        }
+
+        return json_decode($result, true);
+    }
 }

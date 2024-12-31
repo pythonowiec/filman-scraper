@@ -36,12 +36,37 @@
 
     <div class="w-100">
         @if(!empty($searchResult) && is_array($searchResult))
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-5">
-
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-5" x-data="{ id: null }">
                 @foreach($searchResult as $key => $item)
-                    <div class="border-solid border-2 p-2 border-black">
-                        <img src="{{$item['poster']}}" alt="Plakat">
-                        <p>{{$item['title']}}</p>
+                    <div class="relative border-solid border-2 p-2 border-black video-card" @mouseover="id = {{$key}}"
+                         @mouseleave="id = null">
+                        <div class="z-2 relative">
+                            <img src="{{$item['poster']}}" alt="Plakat">
+                            <p>{{$item['title']}}</p>
+                        </div>
+                        <div class="z-1 relative actions-btn">
+                            <button x-show="id == {{$key}}" x-transition class="p-2 ">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="36px" height="36px" viewBox="0 0 16 16" fill="none">
+                                    <path d="M8 6L8 2L10 2L16 8L10 14L8 14L8 10L-1.74845e-07 10L-3.01991e-07 6L8 6Z"/>
+                                </svg>
+                            </button>
+
+                            <!-- Download button as SVG -->
+                            <button x-show="id == {{$key}}" x-transition class="p-2" title="Download video">
+                                <svg fill="#000000" height="36px" width="36px" version="1.1" id="Capa_1"
+                                     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                     viewBox="0 0 29.978 29.978" xml:space="preserve">
+                                    <g>
+                                        <path d="M25.462,19.105v6.848H4.515v-6.848H0.489v8.861c0,1.111,0.9,2.012,2.016,2.012h24.967c1.115,0,2.016-0.9,2.016-2.012
+                                            v-8.861H25.462z"/>
+                                        <path d="M14.62,18.426l-5.764-6.965c0,0-0.877-0.828,0.074-0.828s3.248,0,3.248,0s0-0.557,0-1.416c0-2.449,0-6.906,0-8.723
+                                            c0,0-0.129-0.494,0.615-0.494c0.75,0,4.035,0,4.572,0c0.536,0,0.524,0.416,0.524,0.416c0,1.762,0,6.373,0,8.742
+                                            c0,0.768,0,1.266,0,1.266s1.842,0,2.998,0c1.154,0,0.285,0.867,0.285,0.867s-4.904,6.51-5.588,7.193
+                                            C15.092,18.979,14.62,18.426,14.62,18.426z"/>
+                                    </g>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 @endforeach
             </div>
