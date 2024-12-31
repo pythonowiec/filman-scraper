@@ -56,12 +56,13 @@ class MediaApiService
 
             $result = $response->getBody()->getContents();
         } catch (GuzzleException $exception) {
-            if ($exception->getCode() == 404) {
-                return 'Not found any videos.';
-            }
-
-            if ($exception->getCode() == 500) {
-                return 'Something went wrong.';
+            switch ($exception->getCode()) {
+                case 404:
+                    return 'Not found any videos.';
+                case 401:
+                    return 'Not authorized.';
+                default:
+                    return 'Something went wrong.';
             }
         }
 

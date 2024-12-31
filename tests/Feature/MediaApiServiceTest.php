@@ -87,6 +87,7 @@ class MediaApiServiceTest extends TestCase
     {
         return [
             'when 404 not found' => ['code' => 404, 'message' => 'Not found any videos.'],
+            'when 401 unauthorized' => ['code' => 401, 'message' => 'Not authorized.'],
             'when 500 error occurred' => ['code' => 500, 'message' => 'Something went wrong.'],
         ];
     }
