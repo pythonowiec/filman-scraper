@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.video-card {
+    height: 500px;
+}
+
+.actions-btn {
+    display: flex;
+    justify-content: center;
+    bottom: 50%;
+    gap: 10px;
+}
+
+.actions-btn button {
+    background-color: #1F2937;
+    color: #ffffff;
+}
+.actions-btn svg {
+    fill: #ffffff;
+}
+
+.actions-btn button:hover svg {
+    fill: #bfbfbf;
+}
