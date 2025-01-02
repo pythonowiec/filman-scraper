@@ -35,7 +35,7 @@
     </div>
 
     <div class="w-100">
-        @if(!empty($searchResult) && is_array($searchResult))
+        @if(!empty($searchResult) && $searchResult instanceof \Illuminate\Support\Collection)
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-5" x-data="{ id: null }">
                 @foreach($searchResult as $key => $item)
                     <div class="relative border-solid border-2 p-2 border-black video-card" @mouseover="id = {{$key}}"
@@ -45,14 +45,13 @@
                             <p>{{$item['title']}}</p>
                         </div>
                         <div class="z-1 relative actions-btn">
-                            <button x-show="id == {{$key}}" x-transition class="p-2 ">
+                            <a wire:click="showDetails({{$key}}, '{{$item['title']}}')" x-show="id == {{$key}}" x-transition class="p-2 ">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="36px" height="36px" viewBox="0 0 16 16" fill="none">
                                     <path d="M8 6L8 2L10 2L16 8L10 14L8 14L8 10L-1.74845e-07 10L-3.01991e-07 6L8 6Z"/>
                                 </svg>
-                            </button>
+                            </a>
 
-                            <!-- Download button as SVG -->
-                            <button x-show="id == {{$key}}" x-transition class="p-2" title="Download video">
+                            <a x-show="id == {{$key}}" x-transition class="p-2" title="Download video">
                                 <svg fill="#000000" height="36px" width="36px" version="1.1" id="Capa_1"
                                      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                                      viewBox="0 0 29.978 29.978" xml:space="preserve">
@@ -65,7 +64,7 @@
                                             C15.092,18.979,14.62,18.426,14.62,18.426z"/>
                                     </g>
                                 </svg>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 @endforeach

@@ -5,19 +5,22 @@ namespace App\Livewire;
 use App\Services\MediaApiService;
 use HTMLPurifier;
 use HTMLPurifier_Config;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Livewire\Component;
+use App\Livewire\Details;
 
 class Library extends Component
 {
     public string $title = '';
-    public string|array $searchResult;
+    public string|Collection $searchResult;
     public bool $loading = false;
 
     public function search(MediaApiService $apiService): void
     {
         $this->loading = true;
 //        $this->searchResult = $apiService->searchMedia($this->title);
-        $this->searchResult = json_decode('{
+        $result = json_decode('{
   "0" : {
     "title" : "Han Solo: Gwiezdne wojny - historie / Solo: A Star Wars Story",
     "url" : "https://filman.cc/m/XtMY7z9D0PEFpKgyZQIanUNbe",
@@ -159,7 +162,18 @@ class Library extends Component
     "poster" : "https://filman.cc/public/static/poster/big/10423-series.jpg"
   }
 }', true);
+        $this->searchResult = collect($result);
+        session(['searchResult' => $this->searchResult]);
         $this->loading = false;
+    }
+
+    public function showDetails(int $key, string $title): void
+    {
+        session([
+            'clickedVideoKey' => $key,
+        ]);
+
+        $this->redirectRoute('details', ['title' => Str::slug($title)]);
     }
 
     public function render()
