@@ -57,6 +57,36 @@ class MediaApiServiceTest extends TestCase
         $this->assertEquals($response, $result);
     }
 
+
+    public function testGetSeriesEpisodesSuccess(): void
+    {
+        $response = [
+            '0' => [
+                'title' => 1,
+                'poster' => 'http://example.com/image.jpg',
+                'url' => 'https://example.com/test',
+            ]
+        ];
+
+        $mockResponse = new Response(200, [], json_encode($response));
+
+        $url = env('MEDIA_API_URL') . '/find_series';
+
+        $this->mockClient
+            ->shouldReceive('post')
+            ->once()
+            ->with($url, [
+                'form_params' => [
+                    'url' => 'https:://example.com'
+                ]
+            ])
+            ->andReturn($mockResponse);
+
+        $result = $this->apiService->getSeriesEpisodes('https:://example.com');
+
+        $this->assertEquals($response, $result);
+    }
+
     #[DataProvider('statusesDataProvider')]
     public function testSearchMediaFailure(int $code, string $message): void
     {
@@ -81,6 +111,53 @@ class MediaApiServiceTest extends TestCase
         $result = $this->apiService->searchMedia($title);
 
         $this->assertEquals($message, $result);
+    }
+
+    #[DataProvider('statusesDataProvider')]
+    public function testGetSeriesEpisodesFailure(int $code, string $message): void
+    {
+        $url = env('MEDIA_API_URL') . '/find_series';
+
+        $mockResponse = new Response($code);
+        $request = new Request('POST', $url);
+        $exception = new RequestException($message, $request, $mockResponse);
+
+        $this->mockClient
+            ->shouldReceive('post')
+            ->once()
+            ->with($url, [
+                'form_params' => [
+                    'url' => 'https:://example.com'
+                ]
+            ])
+            ->andThrow($exception);
+
+        $result = $this->apiService->getSeriesEpisodes('https:://example.com');
+
+        $this->assertEquals($message, $result);
+    }
+
+    public function testGetSeriesEpisodesOnMoviePage(): void
+    {
+        $url = env('MEDIA_API_URL') . '/find_series';
+
+        $response = [];
+
+        $mockResponse = new Response(200, [], json_encode($response));
+
+        $this->mockClient
+            ->shouldReceive('post')
+            ->once()
+            ->with($url, [
+                'form_params' => [
+                    'url' => 'https:://example.com'
+                ]
+            ])
+            ->andReturn($mockResponse);
+
+        $result = $this->apiService->getSeriesEpisodes('https:://example.com');
+
+        $this->assertEquals([], $result);
     }
 
     public static function statusesDataProvider(): array

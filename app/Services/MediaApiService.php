@@ -45,8 +45,6 @@ class MediaApiService
     {
         $url = env('MEDIA_API_URL') . '/find_media';
 
-        $result = '';
-
         try {
             $response = $this->client->post($url, [
                 'form_params' => [
@@ -54,7 +52,7 @@ class MediaApiService
                 ]
             ]);
 
-            $result = $response->getBody()->getContents();
+            return json_decode($response->getBody()->getContents(), true);
         } catch (GuzzleException $exception) {
             switch ($exception->getCode()) {
                 case 404:
@@ -66,14 +64,11 @@ class MediaApiService
             }
         }
 
-        return json_decode($result, true);
     }
 
     public function getSeriesEpisodes(string $seriesUrl): array|string
     {
         $url = env('MEDIA_API_URL') . '/find_series';
-
-        $result = '';
 
         try {
             $response = $this->client->post($url, [
@@ -82,7 +77,7 @@ class MediaApiService
                 ]
             ]);
 
-            $result = $response->getBody()->getContents();
+            return json_decode($response->getBody()->getContents(), true);
         } catch (GuzzleException $exception) {
             switch ($exception->getCode()) {
                 case 404:
@@ -94,6 +89,5 @@ class MediaApiService
             }
         }
 
-        return json_decode($result, true);
     }
 }
