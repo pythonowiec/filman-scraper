@@ -3,25 +3,30 @@
 namespace App\Livewire;
 
 use App\Services\MediaApiService;
+use App\Services\TMDBApiService;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
 class Details extends Component
 {
-    public string|array $details;
+    public string|array $episodesList;
     /**
      * @var \Illuminate\Foundation\Application|\Illuminate\Session\SessionManager|mixed|null
      */
     public string $url;
-    public string $title    ;
+    public array $details;
 
-    public function mount(MediaApiService $apiService): void
+    public string $downloadLink;
+
+    public function mount(MediaApiService $apiService, TMDBApiService $TMDBApiService): void
     {
         /** @var Collection $videos */
         $videos = session('searchResult');
-        $this->title = $videos->get(session('clickedVideoKey'))['title'];
-//        $this->details = $apiService->getSeriesEpisodes($this->url);
-        $this->details = json_decode('{
+        $key = session('clickedVideoKey');
+        $title = $videos->get($key)['title'];
+
+//        $this->episodesList = $apiService->getSeriesEpisodes($this->url);
+        $this->episodesList = json_decode('{
     "0": {
         "title": "[s01e08] Odcinek 8",
         "url": "https://filman.cc/e/gwiezdne-wojny-akolita-star-wars-the-acolyte/204043/odcinek-8/272002"
@@ -55,6 +60,12 @@ class Details extends Component
         "url": "https://filman.cc/e/gwiezdne-wojny-akolita-star-wars-the-acolyte/200277/odcinek-1/272002"
     }
 }', true);
+        if (empty($this->episodesList)) {
+            $this->details = $TMDBApiService->getMovieDetails($title);
+            $this->downloadLink = $videos->get(session('clickedVideoKey'))['url'];
+        } else {
+            $this->details = $TMDBApiService->getSeriesDetails($title);
+        }
     }
 
     public function render()
