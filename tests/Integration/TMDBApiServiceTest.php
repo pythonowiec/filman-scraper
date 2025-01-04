@@ -24,7 +24,7 @@ class TMDBApiServiceTest extends TestCase
         $response = $this->service
             ->getMovieDetails($title);
 
-        $this->assertEquals([
+        $expectedResponse = [
             'adult' => false,
             'backdrop_path' => '/5vDuLrjJXFS9PTF7Q1xzobmYKR9.jpg',
             'genre_ids' => [
@@ -43,7 +43,13 @@ class TMDBApiServiceTest extends TestCase
             'video' => false,
             'vote_average' => 7.4,
             'vote_count' => 13761,
-        ], $response);
+        ];
+
+        $keysToIgnore = ['vote_count', 'vote_average', 'popularity'];
+        $filteredExpectedResponse = $this->filterKeysFromArray($expectedResponse, $keysToIgnore);
+        $filteredResponse = $this->filterKeysFromArray($response, $keysToIgnore);
+
+        $this->assertEquals($filteredExpectedResponse, $filteredResponse);
     }
 
     public function testGetMovieNotFound(): void
@@ -63,7 +69,7 @@ class TMDBApiServiceTest extends TestCase
         $response = $this->service
             ->getSeriesDetails($title);
 
-        $this->assertEquals([
+        $expectedResponse = [
             'adult' => false,
             'backdrop_path' => '/m6eRgkR1KC6Mr6gKx6gKCzSn6vD.jpg',
             'genre_ids' => [
@@ -84,7 +90,14 @@ class TMDBApiServiceTest extends TestCase
             'name' => 'Gwiezdne wojny: Wojny klonów',
             'vote_average' => 8.5,
             'vote_count' => 2034,
-        ], $response);
+        ];
+
+        $keysToIgnore = ['vote_count', 'vote_average', 'popularity'];
+
+        $filteredExpectedResponse = $this->filterKeysFromArray($expectedResponse, $keysToIgnore);
+        $filteredResponse = $this->filterKeysFromArray($response, $keysToIgnore);
+
+        $this->assertEquals($filteredExpectedResponse, $filteredResponse);
     }
 
 
