@@ -20,10 +20,13 @@ class Details extends Component
 
     public function mount(MediaApiService $apiService, TMDBApiService $TMDBApiService): void
     {
-        /** @var Collection $videos */
-        $videos = session('searchResult');
         $key = session('clickedVideoKey');
-        $title = $videos->get($key)['title'];
+
+        /** @var Collection $searchResult */
+        $searchResult = session('searchResult');
+
+        $video = $searchResult->get($key);
+        $title = $video['title'];
 
 //        $this->episodesList = $apiService->getSeriesEpisodes($this->url);
         $this->episodesList = json_decode('{
@@ -62,7 +65,7 @@ class Details extends Component
 }', true);
         if (empty($this->episodesList)) {
             $this->details = $TMDBApiService->getMovieDetails($title);
-            $this->downloadLink = $videos->get(session('clickedVideoKey'))['url'];
+            $this->downloadLink = $video['url'];
         } else {
             $this->details = $TMDBApiService->getSeriesDetails($title);
         }
