@@ -15,14 +15,49 @@
         </div>
     </div>
 
+    <div class="flex flex-row mt-5 gap-2" x-data="{marked: ''}">
+        <button class="video-type-btn" wire:click="setVideoType('Dubbing')" x-on:click="marked = 'Dubbing'"
+                x-bind:class="marked == 'Dubbing' ? 'btn-marked' : ''">Dubbing {{session('message')}}
+        </button>
+        <button class="video-type-btn" wire:click="setVideoType('PL')" x-on:click="marked = 'PL'"
+                x-bind:class="marked == 'PL' ? 'btn-marked' : ''">PL
+        </button>
+        <button class="video-type-btn" wire:click="setVideoType('Napisy')" x-on:click="marked = 'Napisy'"
+                x-bind:class="marked == 'Napisy' ? 'btn-marked' : ''">Subtitles
+        </button>
+        <button class="video-type-btn" wire:click="setVideoType('Lektor')" x-on:click="marked = 'Lektor'"
+                x-bind:class="marked == 'Lektor' ? 'btn-marked' : ''">Lector
+        </button>
+    </div>
+
+    @if($messages)
+        <div class="fixed right-5 top-0">
+            @foreach($messages as $message)
+                <div class="bg-gray-100 border border-gray-400 text-gray-700 px-4 py-3 rounded relative mt-5 w-80"
+                     role="alert" x-data="{open: true}" x-init="setTimeout(() => open = false, 3000)" x-show="open">
+                    <span class="block sm:inline">{{$message}}</span>
+                    <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                    <svg class="fill-current h-6 w-6 text-gray-500" role="button" xmlns="http://www.w3.org/2000/svg"
+                         x-on:click="open = ! open"
+                         viewBox="0 0 20 20"><title>Close</title><path
+                            d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+                    </span>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
     <div class="mt-5">
+
         <span class="text-xl font-weight-bold">Episodes</span>
+
         @if(is_array($episodesList))
             @foreach($episodesList as $k => $detail)
                 <li>
-                    <a data-link="{{$detail['url']}}">{{$detail['title']}}</a>
-                    <button>
-                        <svg fill="#000000" height="24px" width="24px" version="1.1" id="Capa_1"
+                    <a data-link="">{{$detail['title']}}</a>
+                    <button
+                        wire:click="downloadVideo('{{$details['name'] ?? $details['title']}} {{Str::match('/\[(.*?)\]/', $detail['title'])}}', '{{$detail['url']}}')">
+                        <svg fill="#000000" height="24px" width="24px" id="Capa_1"
                              xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                              viewBox="0 0 29.978 29.978" xml:space="preserve">
                                     <g>

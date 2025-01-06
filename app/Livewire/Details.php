@@ -2,9 +2,11 @@
 
 namespace App\Livewire;
 
+use App\Jobs\DownloadVideoJob;
 use App\Services\MediaApiService;
 use App\Services\TMDBApiService;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 class Details extends Component
@@ -15,8 +17,10 @@ class Details extends Component
      */
     public string $url;
     public array $details;
-
     public string $downloadLink;
+    public string $videoType;
+
+    public array $messages;
 
     public function mount(MediaApiService $apiService, TMDBApiService $TMDBApiService): void
     {
@@ -69,6 +73,21 @@ class Details extends Component
         } else {
             $this->details = $TMDBApiService->getSeriesDetails($title);
         }
+    }
+
+    public function downloadVideo(string $fileName, string $url): void
+    {
+        if (isset($this->videoType)) {
+            DownloadVideoJob::dispatch(Str::snake($fileName), $url, $this->videoType);
+            $this->messages[] = 'Video was added to download.';
+        } else {
+            $this->messages[] = "Select type of video to download.";
+        }
+    }
+
+    public function setVideoType(string $type): void
+    {
+        $this->videoType = $type;
     }
 
     public function render()
