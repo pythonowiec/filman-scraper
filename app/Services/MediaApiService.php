@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\DownloadEvent;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Log;
@@ -33,9 +34,6 @@ class MediaApiService
 
             Storage::disk('public')->put(sprintf('downloaded_media/%s.mp4', $fileName), $fileContent);
 
-            session([
-                'message' => 'File downloaded successfully.',
-            ]);
 
         } catch (\Exception $e) {
             Log::error($e->getMessage());

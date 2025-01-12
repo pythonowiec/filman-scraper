@@ -48,10 +48,8 @@
     @endif
 
     <div class="mt-5">
-
-        <span class="text-xl font-weight-bold">Episodes</span>
-
-        @if(is_array($episodesList))
+        @if(is_array($episodesList) && !empty($episodesList))
+            <span class="text-xl font-weight-bold">Episodes</span>
             @foreach($episodesList as $k => $detail)
                 <li>
                     <a data-link="">{{$detail['title']}}</a>
